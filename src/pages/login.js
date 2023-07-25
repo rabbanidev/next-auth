@@ -1,28 +1,43 @@
 import { Button } from "antd";
+import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { GoogleOutlined, GithubOutlined } from "@ant-design/icons";
 import Head from "next/head";
 import styles from "@/styles/Login.module.css";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import auth from "@/firebase/firebase.auth";
 
 const LoginPage = () => {
   const router = useRouter();
   const { data: session } = useSession();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [createUserWithEmailAndPassword, user, loading, error] =
+    useCreateUserWithEmailAndPassword(auth);
 
-  if (session?.user) {
+  // redirect when user is loggedin
+  if (session?.user || user?.user?.email) {
     router.push("/");
   }
 
   const githubSignIn = () => {
     signIn("github", {
       callbackUrl: "http://localhost:3000",
+      redirect: false,
     });
   };
 
   const googleSignIn = () => {
     signIn("google", {
       callbackUrl: "http://localhost:3000",
+      redirect: false,
     });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    createUserWithEmailAndPassword(email, password);
   };
 
   return (
@@ -37,12 +52,20 @@ const LoginPage = () => {
           <GithubOutlined onClick={githubSignIn} />
         </div>
         <hr />
-        <form>
+        <form onSubmit={handleSubmit}>
           <label htmlFor="">Your Email</label>
-          <input type="email" />
+          <input
+            type="email"
+            required
+            onChange={(e) => setEmail(e.target.value)}
+          />
           <label htmlFor="">Your Password</label>
-          <input type="password" />
-          <Button>Login</Button>
+          <input
+            type="password"
+            required
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button htmlType="submit">Login</Button>
         </form>
       </div>
     </div>

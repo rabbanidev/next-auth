@@ -19,6 +19,12 @@ const LoginPage = () => {
     });
   };
 
+  const googleSignIn = () => {
+    signIn("google", {
+      callbackUrl: "http://localhost:3000",
+    });
+  };
+
   return (
     <div>
       <Head>
@@ -27,7 +33,7 @@ const LoginPage = () => {
       <div className={styles.form}>
         <h3>LOGIN</h3>
         <div className={styles.social_icons}>
-          <GoogleOutlined />
+          <GoogleOutlined onClick={googleSignIn} />
           <GithubOutlined onClick={githubSignIn} />
         </div>
         <hr />
